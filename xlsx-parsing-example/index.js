@@ -23,18 +23,31 @@ for (const [i, r] of records.entries()) {
 }
 
 const crawler = async () => {
-  await Promise.all(
-    records.map(async r => {
-      const response = await axios.get(r.링크);
-      if (response.status === 200) {
-        // 응답이 성공한 경우
-        const html = response.data;
-        const $ = cheerio.load(html);
-        const text = $(".score.score_left .star_score").text();
-        console.log(r.제목, "평점", text.trim());
-      }
-    })
-  );
+  // 순차요청
+  for (const [i, r] of records.entries()) {
+    const response = await axios.get(r.링크);
+    if (response.status === 200) {
+      // 응답이 성공한 경우
+      const html = response.data;
+      const $ = cheerio.load(html);
+      const text = $(".score.score_left .star_score").text();
+      console.log(r.제목, "평점", text.trim());
+    }
+  }
+
+  //한번에 요청
+  //   await Promise.all(
+  //     records.map(async r => {
+  //       const response = await axios.get(r.링크);
+  //       if (response.status === 200) {
+  //         // 응답이 성공한 경우
+  //         const html = response.data;
+  //         const $ = cheerio.load(html);
+  //         const text = $(".score.score_left .star_score").text();
+  //         console.log(r.제목, "평점", text.trim());
+  //       }
+  //     })
+  //   );
 };
 
 crawler();
