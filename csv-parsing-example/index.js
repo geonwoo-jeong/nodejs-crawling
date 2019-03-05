@@ -10,15 +10,24 @@ const crawler = async () => {
     args: ["--no-sandbox", "--disable-setuid-sandbox"]
   });
 
-  const page = await browser.newPage();
-  const page2 = await browser.newPage();
-  const page3 = await browser.newPage();
-  await page.goto("https://google.com");
-  await page2.goto("https://naver.com");
-  await page3.goto("https://github.com");
-  await page.waitFor(3000);
-  await page2.waitFor(3000);
-  await page3.waitFor(3000);
+  const [page, page2, page3] = await Promise.all([
+    browser.newPage(),
+    browser.newPage(),
+    browser.newPage()
+  ]);
+
+  await Promise.all([
+    page.goto("https://google.com"),
+    page2.goto("https://naver.com"),
+    page3.goto("https://github.com")
+  ]);
+
+  await Promise.all([
+    await page.waitFor(3000),
+    await page2.waitFor(3000),
+    await page3.waitFor(3000)
+  ]);
+
   await page.close();
   await page2.close();
   await page3.close();
