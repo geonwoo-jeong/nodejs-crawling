@@ -1,4 +1,5 @@
 const parse = require("csv-parse/lib/sync");
+const stringify = require("csv-stringify/lib/sync");
 const fs = require("fs");
 const puppeteer = require("puppeteer");
 
@@ -7,6 +8,7 @@ const records = parse(csv.toString("utf-8"));
 
 const crawler = async () => {
   try {
+    const result = [];
     const browser = await puppeteer.launch({
       args: ["--no-sandbox", "--disable-setuid-sandbox"]
     });
@@ -22,7 +24,7 @@ const crawler = async () => {
             const text = await page.evaluate(tag => {
               return tag.textContent;
             }, scoreEl);
-            console.log(text.trim());
+            result[i] = [...r, text.trim()];
           }
           await page.close();
         } catch (e) {
@@ -31,6 +33,8 @@ const crawler = async () => {
       })
     );
     await browser.close();
+    const str = stringify(result);
+    fs.writeFileSync("csv/result.csv", str);
   } catch (e) {
     console.log(e);
   }
