@@ -16,6 +16,16 @@ const crawler = async () => {
       records.map(async (r, i) => {
         try {
           const page = await browser.newPage();
+
+          // 이미지일 경우 불러오지 않도록
+          await page.setRequestInterception(true);
+          page.on("request", request => {
+            if (request.resourceType() === "image") {
+              request.abort();
+            } else {
+              request.continue();
+            }
+          });
           await page.goto(r[1]);
           const scoreEl = await page.$(
             "body .nav_container .nav_body .nav_content .content_view .post_view .post_content"
